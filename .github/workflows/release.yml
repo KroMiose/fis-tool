@@ -1,0 +1,40 @@
+name: Release FIS Tool
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Poetry
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          poetry-version: '^1.2'
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build the package
+        run: poetry build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v2
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          repository: pypi
+          dist_dir: dist/
+      - name: Create Release on GitHub
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: Release FIS Tool ${{ github.ref }}
