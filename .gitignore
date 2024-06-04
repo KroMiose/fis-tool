@@ -159,3 +159,6 @@ outputs/**
 .vscode/*
 !.vscode/extensions.json
 !.vscode/launch.json
+
+# 生成结果
+local_prj_*.fis

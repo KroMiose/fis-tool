@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import re
 import sys
@@ -24,11 +25,22 @@ def check_file_ignore(file_path: str, gitignore_content: str):
     """检查文件是否在.gitignore中忽略。"""
     if not gitignore_content:
         return False
-    for pattern in gitignore_content.split("\n"):
-        if pattern.startswith("#"):
+    for pattern in gitignore_content.splitlines():
+        pattern = pattern.strip()
+        if pattern.startswith("#") or not pattern:
             continue
-        if re.match(pattern, file_path):
+        # 使用 fnmatch 模块匹配通配符
+        if fnmatch.fnmatch(file_path, pattern):
             return True
+        if os.path.commonprefix(
+            [os.path.abspath(file_path), os.path.join(os.getcwd(), pattern)]
+        ) == os.path.join(os.getcwd(), pattern):
+            return True
+    # 检查是否在 .git 目录下
+    if os.path.commonprefix(
+        [os.path.abspath(file_path), os.path.join(os.getcwd(), ".git")]
+    ) == os.path.join(os.getcwd(), ".git"):
+        return True
     return False
 
 
@@ -187,18 +199,20 @@ def interactive_mode():
 
         if answers["action"] == "从项目目录生成 FIS 描述文件":
             project_path = inquirer.text(
-                message="请输入项目根目录路径", default=last_prj_path
+                message="请输入项目根目录路径 (留空使用当前目录)", default=last_prj_path
             )
+            if not project_path:
+                project_path = "."
             if not os.path.exists(project_path):
                 print(f"错误: 项目路径 '{project_path}' 不存在。")
                 continue
             last_prj_path = project_path
 
-            prj_name = Path(project_path).name
+            prj_name = Path(project_path).name or "local"
 
             output_file = inquirer.text(
                 message="请输入输出描述文件路径",
-                default=last_desc_path or f"{prj_name}_pro_desc.fis",
+                default=last_desc_path or f"{prj_name}_prj_desc.fis",
             )
             if "." not in output_file:
                 output_file += ".fis"
@@ -208,10 +222,11 @@ def interactive_mode():
                 )
 
                 if not confirm:
+                    print("操作已取消。")
                     continue
             last_desc_path = output_file
 
-            options = inquirer.list_input(
+            options = inquirer.checkbox(
                 message="请选择选项：(方向键选择；空格: 选择；回车: 确认)",
                 choices=[
                     "添加 FIS 结构说明提示词 (中文)",

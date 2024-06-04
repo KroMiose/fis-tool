@@ -26,12 +26,12 @@ jobs:
       - name: Publish Package
         run: >-
           poetry publish --build
-      - name: Create Release on GitHub
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-          body: Release FIS Tool ${{ github.ref }}
-          token: ${{ secrets.REPO_TOKEN }}
+      # - name: Create Release on GitHub
+      #   uses: actions/create-release@v1
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     draft: false
+      #     prerelease: false
+      #     body: Release FIS Tool ${{ github.ref }}
+      #     token: ${{ secrets.REPO_TOKEN }}
