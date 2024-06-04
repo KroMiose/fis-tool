@@ -7,7 +7,7 @@ import argparse
 
 import inquirer
 
-from instruction import INSTRUCTION_TEXT, INSTRUCTION_TEXT_EN
+from src.instruction import INSTRUCTION_TEXT, INSTRUCTION_TEXT_EN
 
 
 def is_text_file(file_path: str):

@@ -34,3 +34,4 @@ jobs:
           draft: false
           prerelease: false
           body: Release FIS Tool ${{ github.ref }}
+          token: ${{ secrets.REPO_TOKEN }}
