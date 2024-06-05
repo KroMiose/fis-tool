@@ -60,12 +60,14 @@ def read_fis_description(description_file: str) -> str:
     with open(description_file, "r", encoding="utf-8") as f:
         description = f.read()
 
-    # 使用正则表达式去除注释部分
-    description = re.sub(r"{/\*.*?\*/}", "", description, flags=re.DOTALL)
-
     # 文件包含指导信息需要截取
     if description.startswith(INSTRUCTION_TEXT):
         description = description[len(INSTRUCTION_TEXT) :].strip()
+    if description.startswith(INSTRUCTION_TEXT_EN):
+        description = description[len(INSTRUCTION_TEXT_EN) :].strip()
+
+    # 使用正则表达式去除注释部分
+    description = re.sub(r"{/\*.*?\*/}", "", description, flags=re.DOTALL)
 
     # 文件包含 ```fis 和 ``` 需要进行提取
     if "```fis\n" in description:
@@ -94,6 +96,7 @@ def create_project_from_fis(description_file: str, output_path: str):
                 f.write(content_lines[0])
             print(f"文件已创建: {full_path}")
         elif "[BINARY]" in file_path:
+            full_path = full_path.replace("[BINARY]", "").strip()
             open(full_path, "a").close()
             print(f"空文件已创建: {full_path}")
 
