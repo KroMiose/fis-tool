@@ -55,7 +55,7 @@ $$$ src/old.js [DELETE]
 
 **3. 返回结果规范：**
 
-- 请使用 FIS 结构来描述新项目或者你对项目的变更，并且确保 FIS 结构内容完整地包含在有且只有一对 "```fis" 中，以便正确解析你的代码变更。
+- 当你需要对文件进行更改时，请使用 FIS 结构来描述新项目或者你对项目的变更，并且确保 FIS 结构内容完整地包含在有且只有一对 "```fis" 中，以便正确解析你的代码变更。
 - 请你仅返回修改过的文件内容，未修改的文件不需要返回。
 
 请务必仔细阅读并理解以上规范，并在交互过程中严格遵守。这将有助于快速高效地变更应用实现，完成项目开发目标。
@@ -120,7 +120,7 @@ $$$ src/old.js [DELETE]
 
 **3. Return Result Specification:**
 
-- Please use the FIS structure to describe the new project or your changes to the project, and ensure that the FIS structure content is completely enclosed within a single pair of "```fis" to allow correct parsing of your code changes.
+- When you need to make changes to a file, please use the FIS structure to describe the new project or your changes to the project, and ensure that the FIS structure content is completely enclosed within a single pair of "```fis" to allow correct parsing of your code changes.
 - Please only return the modified file content. Unmodified files do not need to be returned.
 
 Please carefully read and understand the above specifications and strictly adhere to them during interaction. This will help you quickly and efficiently implement changes to applications and achieve project development goals. 
