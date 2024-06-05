@@ -23,7 +23,7 @@ def init_model():
     else:
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
-    return genai.GenerativeModel("gemini-1.5-flash")
+    return genai.GenerativeModel("gemini-1.5-pro")
 
 
 def ask_question(question):
