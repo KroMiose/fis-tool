@@ -59,7 +59,6 @@ coverage.xml
 # Django stuff:
 *.log
 sql_function.py
-*.png
 temp/*
 tmp/*
 backup/*
