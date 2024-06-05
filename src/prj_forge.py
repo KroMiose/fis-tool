@@ -12,6 +12,7 @@ def generate_description(
     output_file: str,
     use_explanation: str,
     use_gitignore: bool,
+    ignore_fis: bool,
 ) -> str:
     """从项目生成描述文本。"""
 
@@ -28,6 +29,11 @@ def generate_description(
         for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, project_path)
+            file_name = os.path.basename(file_path)
+
+            if ignore_fis and file_name.endswith(".fis"):  # 忽略 fis 文件
+                # print(f"文件 {relative_path} 是 fis 文件，将跳过。")
+                continue
 
             if use_gitignore and (
                 gitignorefile.ignored(file_path) or relative_path.startswith(".git")

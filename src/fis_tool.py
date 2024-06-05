@@ -1,6 +1,6 @@
 import argparse
 
-from interactive_main import main_interactive_mode
+from src.interactive_main import main_interactive_mode
 from src.prj_forge import (
     apply_changes_from_fis,
     create_project_from_fis,
@@ -37,6 +37,12 @@ def main():
         action="store_true",
         help="使用 .gitignore 文件过滤项目文件",
     )
+    generate_parser.add_argument(
+        "-if",
+        "--ignore-fis",
+        action="store_true",
+        help="忽略 .fis 文件",
+    )
 
     # 从 FIS 描述文件创建项目命令
     create_parser = subparsers.add_parser("create", help="从 FIS 描述文件创建项目")
@@ -53,7 +59,11 @@ def main():
     # 根据子命令执行对应功能
     if args.command == "generate":
         generate_description(
-            args.project_path, args.output, args.explanation, args.gitignore
+            args.project_path,
+            args.output,
+            args.explanation,
+            args.gitignore,
+            args.ignore_fis,
         )
     elif args.command == "create":
         create_project_from_fis(args.description_file, args.output)

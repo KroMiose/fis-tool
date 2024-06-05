@@ -54,6 +54,7 @@ def prj_interactive_mode():
                 "添加 FIS 结构说明提示词 (中文)",
                 "添加 FIS 结构说明提示词 (英文)",
                 "使用 .gitignore 文件过滤项目文件",
+                "忽略 .fis 文件",
             ],
         )
         if "添加 FIS 结构说明提示词 (中文)" in options:
@@ -63,12 +64,12 @@ def prj_interactive_mode():
         else:
             use_explanation = ""
 
-        if "使用 .gitignore 文件过滤项目文件" in options:
-            use_gitignore = True
+        use_gitignore = "使用 .gitignore 文件过滤项目文件" in options
+        ignore_fis = "忽略 .fis 文件" in options
 
         print(f"正在生成 FIS 描述文件 '{output_file}'...")
         prj_fis = generate_description(
-            project_path, output_file, use_explanation, use_gitignore
+            project_path, output_file, use_explanation, use_gitignore, ignore_fis
         )
         break
 

@@ -63,7 +63,8 @@ def main_interactive_mode():
                 output_file += ".fis"
             if os.path.exists(output_file):
                 confirm = inquirer.confirm(
-                    message=f"FIS 描述文件 '{output_file}' 已存在，是否覆盖？", default=True
+                    message=f"FIS 描述文件 '{output_file}' 已存在，是否覆盖？",
+                    default=True,
                 )
 
                 if not confirm:
@@ -77,6 +78,7 @@ def main_interactive_mode():
                     "添加 FIS 结构说明提示词 (中文)",
                     "添加 FIS 结构说明提示词 (英文)",
                     "使用 .gitignore 文件过滤项目文件",
+                    "忽略 .fis 文件",
                 ],
             )
             if "添加 FIS 结构说明提示词 (中文)" in options:
@@ -86,12 +88,12 @@ def main_interactive_mode():
             else:
                 use_explanation = ""
 
-            if "使用 .gitignore 文件过滤项目文件" in options:
-                use_gitignore = True
+            use_gitignore = "使用 .gitignore 文件过滤项目文件" in options
+            ignore_fis = "忽略 .fis 文件" in options
 
             print(f"正在生成 FIS 描述文件 '{output_file}'...")
             generate_description(
-                project_path, output_file, use_explanation, use_gitignore
+                project_path, output_file, use_explanation, use_gitignore, ignore_fis
             )
 
         elif answers["action"] == "从 FIS 描述文件创建项目":
