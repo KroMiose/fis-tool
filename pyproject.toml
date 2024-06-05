@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fis-tool"
-version = "0.2.0"
+version = "0.2.1"
 description = "FIS (File Interaction Script) 工具，用于生成、读取和应用项目文件结构描述，方便与 LLM 进行交互，实现高效的代码变更。"
 authors = ["KroMiose <li_xiangff@163.com>"]
 readme = "README.md"
