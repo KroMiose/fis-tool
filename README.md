@@ -43,7 +43,7 @@ FIS (File Interaction Script) 是一种用于描述项目文件结构的文本�
 
 ```bash
 # 1. 通过 pip 安装
-pip install fis-tool
+pip install fis-tool --upgrade
 
 # 2. 启动交互式终端，根据指引选择功能
 fis-tool
