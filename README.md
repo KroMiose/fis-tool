@@ -8,7 +8,6 @@
    <a href="https://jq.qq.com/?_wv=1027&k=71t9iCT7">
       <img src="https://img.shields.io/badge/加入交流群-636925153-c42.svg" alt="python">
    </a>
-   <br/>💬 技术交流/答疑/讨论 -> ：<a href="https://jq.qq.com/?_wv=1027&k=71t9iCT7">加入交流群-636925153</a> 🗨️
 </div>
 
 ## 简介
