@@ -6,7 +6,7 @@ import inquirer
 from src.chat_models.gemini import ask_question, init_model
 from src.prj_forge import (
     apply_changes_from_fis_content,
-    create_project_from_fis,
+    # create_project_from_fis,
     generate_description,
 )
 
@@ -17,7 +17,7 @@ QUESTION_PROMPT_TEMPLATE = """
 {question}
 """
 
-GEMINI_PLACEHOLDER = "正在建立连接..."
+GEMINI_PLACEHOLDER = ">>> [Gemini]: 正在建立连接..."
 
 
 def prj_interactive_mode():
@@ -80,7 +80,10 @@ def prj_interactive_mode():
     while True:
         question = input("\n>>> [Command]: ")
 
-        if question.startswith("/"):
+        if not question:
+            continue
+
+        if question.startswith("/"):  # 控制命令
             if question == "/quit":
                 print("退出对话模式。")
                 return
@@ -91,17 +94,27 @@ def prj_interactive_mode():
                     default=False,
                 ):
                     apply_changes_from_fis_content(project_path, last_res_content)
-        else:
+                if inquirer.confirm(message="是否更新 FIS 描述文件？", default=True):
+                    generate_description(
+                        project_path,
+                        output_file,
+                        use_explanation,
+                        use_gitignore,
+                        ignore_fis,
+                    )
+                    print(f"FIS 描述文件 '{output_file}' 更新成功。")
+        else:  # 进入 Gemini生成
             print()
             last_res_content = ""
-            print(">>> [Gemini]: ", end=GEMINI_PLACEHOLDER)
+            print("", end=GEMINI_PLACEHOLDER)
             is_first_chunk = True
             for chunk in ask_question(
                 QUESTION_PROMPT_TEMPLATE.format(prj_fis=prj_fis, question=question)
             ):
                 if is_first_chunk:
                     is_first_chunk = False
+                    print("\r" + (len(GEMINI_PLACEHOLDER) * "  "), end="")
                     print("\r>>> [Gemini]: ", end="")
                 print(chunk, end="")
                 last_res_content += chunk
-            print("\n")
+            print()

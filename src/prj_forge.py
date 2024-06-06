@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 
 import gitignorefile
@@ -60,34 +61,34 @@ def generate_description(
     return description
 
 
-def read_fis_description(description_file: str) -> str:
-    """读取描述文本内容。"""
-
-    with open(description_file, "r", encoding="utf-8") as f:
-        description = f.read()
+def read_fis_description_from_content(description_content: str) -> str:
 
     # 文件包含指导信息需要截取
-    if description.startswith(INSTRUCTION_TEXT):
-        description = description[len(INSTRUCTION_TEXT) :].strip()
-    if description.startswith(INSTRUCTION_TEXT_EN):
-        description = description[len(INSTRUCTION_TEXT_EN) :].strip()
+    if description_content.startswith(INSTRUCTION_TEXT):
+        description_content = description_content[len(INSTRUCTION_TEXT) :].strip()
+    if description_content.startswith(INSTRUCTION_TEXT_EN):
+        description_content = description_content[len(INSTRUCTION_TEXT_EN) :].strip()
 
     # 使用正则表达式去除注释部分
-    description = re.sub(r"{/\*.*?\*/}", "", description, flags=re.DOTALL)
+    description_content = re.sub(
+        r"{/\*.*?\*/}", "", description_content, flags=re.DOTALL
+    )
 
     # 文件包含 ```fis 和 ``` 需要进行提取
-    if "```fis\n" in description:
-        description = description.split("```fis\n")[1].rsplit("\n```")[0]
+    if "```fis\n" in description_content:
+        description_content = description_content.split("```fis\n")[1].rsplit("\n```")[
+            0
+        ]
 
-    return description
+    return description_content
 
 
-def create_project_from_fis(description_file: str, output_path: str):
+def create_project_from_fis(description_content: str, output_path: str):
     """
     从描述文本创建项目文件结构。
     """
 
-    description = read_fis_description(description_file)
+    description = read_fis_description_from_content(description_content)
 
     files = description.split("$$$ ")[1:]
     for file_data in files:
@@ -110,6 +111,8 @@ def create_project_from_fis(description_file: str, output_path: str):
 def apply_changes_from_fis_content(project_path: str, content: str):
     """应用 fis 变更内容到项目中。"""
 
+    content = read_fis_description_from_content(content)
+
     changes = content.split("$$$ ")[1:]
     for change in changes:
         file_path, *content_lines = change.split("\n", 1)
@@ -128,22 +131,22 @@ def apply_changes_from_fis_content(project_path: str, content: str):
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             print(f"修改文件 {file_path}")
-        if content_lines and "[NEW]" in file_path:
-            # 文件级别变更
-            file_path = file_path.replace("[REPLACE]", "").strip()
-            new_content = content_lines[0]
-            with open(full_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
-            print(f"创建文件 {file_path}")
         if content_lines and "[DELETE]" in file_path:
             # 文件级别变更
             file_path = file_path.replace("[DELETE]", "").strip()
             os.remove(full_path)
             print(f"删除文件 {file_path}")
+        if content_lines:
+            # 文件级别变更
+            file_path = file_path.replace("[NEW]", "").strip()
+            new_content = content_lines[0]
+            with open(full_path, "w", encoding="utf-8") as f:
+                f.write(new_content)
+            print(f"创建文件 {file_path}")
 
 
 def apply_changes_from_fis_file(project_path: str, changes_file: str):
     """从文件中读取变更描述并应用到项目中。"""
 
-    changes_description = read_fis_description(changes_file)
+    changes_description = Path(changes_file).read_text(encoding="utf-8")
     apply_changes_from_fis_content(project_path, changes_description)
