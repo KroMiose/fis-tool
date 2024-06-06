@@ -161,3 +161,4 @@ outputs/**
 
 # 生成结果
 local_prj_*.fis
+**.fis
