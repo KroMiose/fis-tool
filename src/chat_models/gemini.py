@@ -1,8 +1,8 @@
 import os
 from typing import Optional
-
 import google.generativeai as genai
 import inquirer
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 chat_model: Optional[genai.GenerativeModel] = None
 
@@ -22,7 +22,6 @@ def init_model():
             os.system(f"setx GEMINI_API_KEY {api_key}")
     else:
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-
     return genai.GenerativeModel("gemini-1.5-pro")
 
 
@@ -30,6 +29,19 @@ def ask_question(question):
     global chat_model
     if not chat_model:
         chat_model = init_model()
-    response = chat_model.generate_content(question, stream=True)
+    response = chat_model.generate_content(
+        question,
+        safety_settings={
+            HarmCategory.HARM_CATEGORY_HARASSMENT:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT:
+            HarmBlockThreshold.BLOCK_NONE,
+        },
+        stream=True,
+    )
     for chunk in response:
         yield chunk.text
