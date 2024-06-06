@@ -1,16 +1,16 @@
 import os
 import sys
 from pathlib import Path
-from typing import Dict, cast
 
 import inquirer
 
+from src.interactive_prj import prj_interactive_mode
+from src.options.choices import GeneratorChoices, EntranceChoices
 from src.prj_forge import (
     apply_changes_from_fis_file,
     create_project_from_fis,
     generate_description,
 )
-from src.interactive_prj import prj_interactive_mode
 
 
 def main_interactive_mode():
@@ -20,29 +20,11 @@ def main_interactive_mode():
     last_desc_path: str = ""
 
     while True:
-        answers = cast(
-            Dict,
-            inquirer.prompt(
-                [
-                    inquirer.List(
-                        "action",
-                        message="请选择操作：",
-                        choices=[
-                            # "从远程仓库生成 FIS 描述文件",
-                            "进入项目交互模式",
-                            "从项目目录生成 FIS 描述文件",
-                            "从 FIS 描述文件创建项目",
-                            "从 FIS 描述文件应用项目变更",
-                            "退出应用",
-                        ],
-                    )
-                ]
-            ),
-        )
+        answers = EntranceChoices.action()
 
-        if answers["action"] == "进入项目交互模式":
+        if answers is EntranceChoices.enter_prj_mode:
             prj_interactive_mode()
-        elif answers["action"] == "从项目目录生成 FIS 描述文件":
+        elif answers is EntranceChoices.generate_fis_desc:
             project_path = inquirer.text(
                 message="请输入项目根目录路径 (留空使用当前目录)", default=last_prj_path
             )
@@ -72,31 +54,23 @@ def main_interactive_mode():
                     continue
             last_desc_path = output_file
 
-            options = inquirer.checkbox(
-                message="请选择生成选项：(方向键: 切换选项；空格: 选择；回车: 确认)",
-                choices=[
-                    "添加 FIS 结构说明提示词 (中文)",
-                    "添加 FIS 结构说明提示词 (英文)",
-                    "使用 .gitignore 文件过滤项目文件",
-                    "忽略 .fis 文件",
-                ],
-            )
-            if "添加 FIS 结构说明提示词 (中文)" in options:
+            options = GeneratorChoices.checkbox()
+            if GeneratorChoices.add_fis_desc_zh in options:
                 use_explanation = "zh"
-            elif "添加 FIS 结构说明提示词 (英文)" in options:
+            elif GeneratorChoices.add_fis_desc_en in options:
                 use_explanation = "en"
             else:
                 use_explanation = ""
 
-            use_gitignore = "使用 .gitignore 文件过滤项目文件" in options
-            ignore_fis = "忽略 .fis 文件" in options
+            use_gitignore = GeneratorChoices.use_gitignore in options
+            ignore_fis = GeneratorChoices.ignore_fis_files in options
 
             print(f"正在生成 FIS 描述文件 '{output_file}'...")
             generate_description(
                 project_path, output_file, use_explanation, use_gitignore, ignore_fis
             )
 
-        elif answers["action"] == "从 FIS 描述文件创建项目":
+        elif answers is EntranceChoices.create_prj_from_fis:
             description_file = inquirer.text(message="请输入 FIS 描述文件路径")
             if not os.path.exists(description_file):
                 print(f"错误:  FIS 描述文件 '{description_file}' 不存在。")
@@ -106,7 +80,7 @@ def main_interactive_mode():
             )
             create_project_from_fis(description_file, output_path)
 
-        elif answers["action"] == "从 FIS 描述文件应用项目变更":
+        elif answers is EntranceChoices.apply_fis_changes:
             project_path = inquirer.text(
                 message="请输入项目根目录路径", default=last_prj_path
             )
@@ -119,5 +93,5 @@ def main_interactive_mode():
                 continue
 
             apply_changes_from_fis_file(project_path, changes_file)
-        elif answers["action"] == "退出应用":
+        elif answers == "退出应用":
             sys.exit(0)

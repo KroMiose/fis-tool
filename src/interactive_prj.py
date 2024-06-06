@@ -4,6 +4,7 @@ from pathlib import Path
 import inquirer
 
 from src.chat_models.gemini import ask_question, init_model
+from src.options.choices import GeneratorChoices
 from src.prj_forge import (
     apply_changes_from_fis_content,
     # create_project_from_fis,
@@ -49,24 +50,16 @@ def prj_interactive_mode():
                 print("操作已取消。")
                 return
 
-        options = inquirer.checkbox(
-            message="请选择生成选项：(方向键选择；空格: 选择；回车: 确认)",
-            choices=[
-                "添加 FIS 结构说明提示词 (中文)",
-                "添加 FIS 结构说明提示词 (英文)",
-                "使用 .gitignore 文件过滤项目文件",
-                "忽略 .fis 文件",
-            ],
-        )
-        if "添加 FIS 结构说明提示词 (中文)" in options:
+        options = GeneratorChoices.checkbox()
+        if GeneratorChoices.add_fis_desc_zh in options:
             use_explanation = "zh"
-        elif "添加 FIS 结构说明提示词 (英文)" in options:
+        elif GeneratorChoices.add_fis_desc_en in options:
             use_explanation = "en"
         else:
             use_explanation = ""
 
-        use_gitignore = "使用 .gitignore 文件过滤项目文件" in options
-        ignore_fis = "忽略 .fis 文件" in options
+        use_gitignore = GeneratorChoices.use_gitignore in options
+        ignore_fis = GeneratorChoices.ignore_fis_files in options
 
         print(f"正在生成 FIS 描述文件 '{output_file}'...")
         prj_fis = generate_description(
