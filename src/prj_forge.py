@@ -107,12 +107,10 @@ def create_project_from_fis(description_file: str, output_path: str):
             print(f"空文件已创建: {full_path}")
 
 
-def apply_changes_from_fis(project_path: str, changes_file: str):
-    """从文件中读取变更描述并应用到项目中。"""
+def apply_changes_from_fis_content(project_path: str, content: str):
+    """应用 fis 变更内容到项目中。"""
 
-    changes_description = read_fis_description(changes_file)
-
-    changes = changes_description.split("$$$ ")[1:]
+    changes = content.split("$$$ ")[1:]
     for change in changes:
         file_path, *content_lines = change.split("\n", 1)
         file_path = file_path.strip()
@@ -142,3 +140,10 @@ def apply_changes_from_fis(project_path: str, changes_file: str):
             file_path = file_path.replace("[DELETE]", "").strip()
             os.remove(full_path)
             print(f"删除文件 {file_path}")
+
+
+def apply_changes_from_fis_file(project_path: str, changes_file: str):
+    """从文件中读取变更描述并应用到项目中。"""
+
+    changes_description = read_fis_description(changes_file)
+    apply_changes_from_fis_content(project_path, changes_description)

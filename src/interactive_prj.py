@@ -5,11 +5,10 @@ import inquirer
 
 from src.chat_models.gemini import ask_question, init_model
 from src.prj_forge import (
-    apply_changes_from_fis,
+    apply_changes_from_fis_content,
     create_project_from_fis,
     generate_description,
 )
-
 
 QUESTION_PROMPT_TEMPLATE = """
 {prj_fis}
@@ -17,6 +16,8 @@ QUESTION_PROMPT_TEMPLATE = """
 请基于以上 FIS 结构来回答我的问题：
 {question}
 """
+
+GEMINI_PLACEHOLDER = "正在建立连接..."
 
 
 def prj_interactive_mode():
@@ -74,10 +75,33 @@ def prj_interactive_mode():
         break
 
     print("项目初始化成功，进入对话交互模式。\n")
+    last_res_content = ""
 
     while True:
-        question = input(">>> 请输入指令:")
-        response = ask_question(
-            QUESTION_PROMPT_TEMPLATE.format(prj_fis=prj_fis, question=question)
-        )
-        print(response)
+        question = input("\n>>> [Command]: ")
+
+        if question.startswith("/"):
+            if question == "/quit":
+                print("退出对话模式。")
+                return
+            elif question == "/apply":
+                print("正在应用最新 FIS 变更...")
+                if inquirer.confirm(
+                    message="应用 FIS 变更将直接覆盖现有项目文件，请确保可以通过 git 等工具恢复项目文件，确定继续？",
+                    default=False,
+                ):
+                    apply_changes_from_fis_content(project_path, last_res_content)
+        else:
+            print()
+            last_res_content = ""
+            print(">>> [Gemini]: ", end=GEMINI_PLACEHOLDER)
+            is_first_chunk = True
+            for chunk in ask_question(
+                QUESTION_PROMPT_TEMPLATE.format(prj_fis=prj_fis, question=question)
+            ):
+                if is_first_chunk:
+                    is_first_chunk = False
+                    print("\r>>> [Gemini]: ", end="")
+                print(chunk, end="")
+                last_res_content += chunk
+            print("\n")

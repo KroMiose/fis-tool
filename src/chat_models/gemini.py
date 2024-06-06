@@ -30,5 +30,6 @@ def ask_question(question):
     global chat_model
     if not chat_model:
         chat_model = init_model()
-    response = chat_model.generate_content(question)
-    return response.text
+    response = chat_model.generate_content(question, stream=True)
+    for chunk in response:
+        yield chunk.text
