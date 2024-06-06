@@ -1,8 +1,8 @@
 import os
 from typing import Optional
-
 import google.generativeai as genai
 import inquirer
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 chat_model: Optional[genai.GenerativeModel] = None
 
@@ -22,7 +22,6 @@ def init_model():
             os.system(f"setx GEMINI_API_KEY {api_key}")
     else:
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-
     return genai.GenerativeModel("gemini-1.5-pro")
 
 

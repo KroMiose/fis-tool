@@ -1,0 +1,3 @@
+language = "python"
+run = "python3 src/fis_tool.py"
+modules = ["python-3.10"]
