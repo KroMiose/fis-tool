@@ -155,8 +155,6 @@ def get_gemini_interpretation(card_name, reversed=False):
 
 \```
 
-</details>
-
 >>> [Command]: /apply
 正在应用最新 FIS 变更...
 [?] 应用 FIS 变更将直接覆盖现有项目文件，请确保可以通过 git 等工具恢复项目文件，确定继续？ (y/N): y
@@ -170,6 +168,8 @@ FIS 描述文件 'tarot_prj_desc.fis' 更新成功。
 
 >>> [Command]:
 ```
+
+</details>
 
 ## 功能
 
