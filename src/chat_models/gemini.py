@@ -9,15 +9,15 @@ chat_model: Optional[genai.GenerativeModel] = None
 
 def init_model():
     if not os.environ.get("GEMINI_API_KEY"):
-        api_key = inquirer.text(
+        api_key: str = inquirer.text(
             message="请输入 Gemini API Key",
             validate=lambda _, x: len(x) > 0,
-        ).execute()
+        )
         genai.configure(api_key=api_key)
-        confirm = inquirer.confirm(
+        confirm: bool = inquirer.confirm(
             message="是否保存 API Key 到用户环境变量 'GEMINI_API_KEY'？(下次无需输入)",
             default=True,
-        ).execute()
+        )
         if confirm:
             os.system(f"setx GEMINI_API_KEY {api_key}")
     else:
