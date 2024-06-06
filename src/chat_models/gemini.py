@@ -30,6 +30,19 @@ def ask_question(question):
     global chat_model
     if not chat_model:
         chat_model = init_model()
-    response = chat_model.generate_content(question, stream=True)
+    response = chat_model.generate_content(
+        question,
+        safety_settings={
+            HarmCategory.HARM_CATEGORY_HARASSMENT:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT:
+            HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT:
+            HarmBlockThreshold.BLOCK_NONE,
+        },
+        stream=True,
+    )
     for chunk in response:
         yield chunk.text
