@@ -2,14 +2,16 @@ import argparse
 
 from src.interactive_main import main_interactive_mode
 from src.prj_forge import (
-    apply_changes_from_fis,
+    apply_changes_from_fis_file,
     create_project_from_fis,
     generate_description,
 )
+from src.utils import shell_init
 
 
 def main():
     """交互式命令行工具的主函数。"""
+    shell_init()
 
     parser = argparse.ArgumentParser(description="FIS (File Interaction Script) 工具")
 
@@ -68,7 +70,7 @@ def main():
     elif args.command == "create":
         create_project_from_fis(args.description_file, args.output)
     elif args.command == "apply":
-        apply_changes_from_fis(args.project_path, args.changes_file)
+        apply_changes_from_fis_file(args.project_path, args.changes_file)
     else:
         # 如果没有指定子命令，则进入交互式模式
         main_interactive_mode()

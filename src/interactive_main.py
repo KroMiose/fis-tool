@@ -6,7 +6,7 @@ from typing import Dict, cast
 import inquirer
 
 from src.prj_forge import (
-    apply_changes_from_fis,
+    apply_changes_from_fis_file,
     create_project_from_fis,
     generate_description,
 )
@@ -118,6 +118,6 @@ def main_interactive_mode():
                 print(f"错误: FIS 文件 '{changes_file}' 不存在。")
                 continue
 
-            apply_changes_from_fis(project_path, changes_file)
+            apply_changes_from_fis_file(project_path, changes_file)
         elif answers["action"] == "退出应用":
             sys.exit(0)
