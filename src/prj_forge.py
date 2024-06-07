@@ -131,12 +131,12 @@ def apply_changes_from_fis_content(project_path: str, content: str):
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             print(f"修改文件 {file_path}")
-        if content_lines and "[DELETE]" in file_path:
+        elif content_lines and "[DELETE]" in file_path:
             # 文件级别变更
             file_path = file_path.replace("[DELETE]", "").strip()
             os.remove(full_path)
             print(f"删除文件 {file_path}")
-        if content_lines:
+        elif content_lines and file_path.strip():
             # 文件级别变更
             file_path = file_path.replace("[NEW]", "").strip()
             new_content = content_lines[0]
