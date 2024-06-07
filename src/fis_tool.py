@@ -68,7 +68,7 @@ def main():
             args.ignore_fis,
         )
     elif args.command == "create":
-        create_project_from_fis(args.description_file, args.output)
+        create_project_from_fis(args.output, args.description_file)
     elif args.command == "apply":
         apply_changes_from_fis_file(args.project_path, args.changes_file)
     else:

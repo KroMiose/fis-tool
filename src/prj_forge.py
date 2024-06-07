@@ -85,29 +85,13 @@ def read_fis_description_from_content(description_content: str) -> str:
     return description_content
 
 
-def create_project_from_fis(description_content: str, output_path: str):
+def create_project_from_fis(output_path: str, description_content: str):
     """
     从描述文本创建项目文件结构。
     """
 
-    description = read_fis_description_from_content(description_content)
-
-    files = description.split(FILE_START_PREFIX)[1:]
-    for file_data in files:
-        file_path, *content_lines = file_data.split("\n", 1)
-        file_path = file_path.strip()
-        full_path = os.path.join(output_path, file_path)
-
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-
-        if content_lines and "[BINARY]" not in file_path:
-            with open(full_path, "w", encoding="utf-8") as f:
-                f.write(content_lines[0])
-            print(f"文件已创建: {full_path}")
-        elif "[BINARY]" in file_path:
-            full_path = full_path.replace("[BINARY]", "").strip()
-            open(full_path, "a").close()
-            print(f"空文件已创建: {full_path}")
+    Path(output_path).mkdir(parents=True, exist_ok=True)
+    return apply_changes_from_fis_content(output_path, description_content)
 
 
 def apply_changes_from_fis_content(project_path: str, content: str):

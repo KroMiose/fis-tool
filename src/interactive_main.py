@@ -78,12 +78,16 @@ def main_interactive_mode():
             output_path = inquirer.text(
                 message="请输入输出项目路径", default=last_prj_path
             )
-            create_project_from_fis(description_file, output_path)
+            create_project_from_fis(output_path, description_file)
 
         elif answers is EntranceChoices.apply_fis_changes:
             project_path = inquirer.text(
-                message="请输入项目根目录路径", default=last_prj_path
+                message="请输入项目根目录路径 (留空使用当前目录)", default=last_prj_path
             )
+            if not project_path:
+                project_path = "."
+            last_prj_path = project_path
+
             if not os.path.exists(project_path):
                 print(f"错误: 项目路径 '{project_path}' 不存在。")
                 continue
