@@ -67,7 +67,8 @@ def prj_interactive_mode():
         )
         break
 
-    print("项目初始化成功，进入对话交互模式。\n")
+    print("=================================")
+    print("项目初始化成功，进入对话交互模式。(输入 /? 查看可用命令)\n")
     last_res_content = ""
 
     while True:
@@ -96,18 +97,25 @@ def prj_interactive_mode():
                         ignore_fis,
                     )
                     print(f"FIS 描述文件 '{output_file}' 更新成功。")
+            elif question == "/?":
+                print("可用命令：")
+                print("/quit: 退出对话模式")
+                print("/apply: 应用最新 FIS 变更")
+                print("Tips: 生成回复过程可随时使用 Ctrl+C 中断输出")
         else:  # 进入 Gemini生成
-            print()
             last_res_content = ""
-            print("", end=GEMINI_PLACEHOLDER)
+            print(f"\n{GEMINI_PLACEHOLDER}", end="")
             is_first_chunk = True
-            for chunk in ask_question(
-                QUESTION_PROMPT_TEMPLATE.format(prj_fis=prj_fis, question=question)
-            ):
-                if is_first_chunk:
-                    is_first_chunk = False
-                    print("\r" + (len(GEMINI_PLACEHOLDER) * "  "), end="")
-                    print("\r>>> [Gemini]: ", end="")
-                print(chunk, end="")
-                last_res_content += chunk
-            print()
+            try:
+                for chunk in ask_question(
+                    QUESTION_PROMPT_TEMPLATE.format(prj_fis=prj_fis, question=question)
+                ):
+                    if is_first_chunk:
+                        is_first_chunk = False
+                        print("\r" + (len(GEMINI_PLACEHOLDER) * "  "), end="")
+                        print("\r>>> [Gemini]: ", end="")
+                    print(chunk, end="")
+                    last_res_content += chunk
+                print()
+            except KeyboardInterrupt:
+                print("\n\n!! 生成已中断")
