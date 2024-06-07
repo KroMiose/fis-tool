@@ -87,7 +87,7 @@ def main_interactive_mode():
             if not os.path.exists(project_path):
                 print(f"错误: 项目路径 '{project_path}' 不存在。")
                 continue
-            changes_file = inquirer.text(message="请拖动 FIS 文件到此处: ")
+            changes_file = inquirer.text(message="请拖动 FIS 文件到此处")
             if not os.path.exists(changes_file):
                 print(f"错误: FIS 文件 '{changes_file}' 不存在。")
                 continue
