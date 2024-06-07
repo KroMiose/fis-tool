@@ -7,6 +7,8 @@ import gitignorefile
 from src.instruction import INSTRUCTION_TEXT, INSTRUCTION_TEXT_EN
 from src.utils import is_text_file
 
+FILE_START_PREFIX = "$$$" + " "
+
 
 def generate_description(
     project_path: str,
@@ -47,10 +49,10 @@ def generate_description(
             if is_text_file(file_path):
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.readlines()
-                description += f"$$$ {relative_path}\n"
+                description += f"{FILE_START_PREFIX}{relative_path}\n"
                 description += "".join(content)
             else:
-                description += f"$$$ {relative_path} [BINARY]\n"
+                description += f"{FILE_START_PREFIX}{relative_path} [BINARY]\n"
 
     if use_explanation:
         description += "```"
@@ -90,7 +92,7 @@ def create_project_from_fis(description_content: str, output_path: str):
 
     description = read_fis_description_from_content(description_content)
 
-    files = description.split("$$$ ")[1:]
+    files = description.split(FILE_START_PREFIX)[1:]
     for file_data in files:
         file_path, *content_lines = file_data.split("\n", 1)
         file_path = file_path.strip()
@@ -113,33 +115,32 @@ def apply_changes_from_fis_content(project_path: str, content: str):
 
     content = read_fis_description_from_content(content)
 
-    changes = content.split("$$$ ")[1:]
+    changes = content.split(FILE_START_PREFIX)[1:]
     for change in changes:
         file_path, *content_lines = change.split("\n", 1)
         file_path = file_path.strip()
+        opt_tag = re.search(r"(\[.*\])", file_path)
+
+        if opt_tag:
+            opt_tag = opt_tag.group(1)
+            file_path = file_path.replace(f"{opt_tag}", "").strip()
         full_path = os.path.join(project_path, file_path)
+        new_content = content_lines[0] if len(content_lines) else ""
 
         # 忽略非文本文件的变更
-        if "[BINARY]" in file_path:
+        if opt_tag == "[BINARY]":
             print(f"忽略非文本文件: {file_path}")
             continue
 
-        if content_lines and "[REPLACE]" in file_path:
-            # 文件级别变更
-            file_path = file_path.replace("[REPLACE]", "").strip()
-            new_content = content_lines[0]
+        # 文件级别变更
+        if content_lines and opt_tag == "[REPLACE]":
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             print(f"修改文件 {file_path}")
-        elif content_lines and "[DELETE]" in file_path:
-            # 文件级别变更
-            file_path = file_path.replace("[DELETE]", "").strip()
+        elif content_lines and opt_tag == "[DELETE]":
             os.remove(full_path)
             print(f"删除文件 {file_path}")
-        elif content_lines and file_path.strip():
-            # 文件级别变更
-            file_path = file_path.replace("[NEW]", "").strip()
-            new_content = content_lines[0]
+        elif content_lines and file_path:
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             print(f"创建文件 {file_path}")
