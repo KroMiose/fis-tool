@@ -29,7 +29,6 @@ def prj_interactive_mode():
     prj_fis: str = ""
 
     while True:
-        init_model()
         project_path = inquirer.text(
             message="请输入项目根目录路径 (留空使用当前目录)",
         )
