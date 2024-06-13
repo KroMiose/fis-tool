@@ -1,3 +1,7 @@
+FILE_START_PREFIX = "$$$" + " "
+
+DEFAULT_FIS_CONFIG_FILE = ".fis_config.yaml"
+
 INSTRUCTION_TEXT = """
 ## FIS 结构定义与交互规范
 

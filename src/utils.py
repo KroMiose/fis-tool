@@ -24,3 +24,7 @@ def is_text_file(file_path: str):
         return True
     except UnicodeDecodeError:
         return False
+
+
+def format_path(path):
+    return path.replace("\\\\", "\\").replace("\\", "/")

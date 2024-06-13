@@ -1,14 +1,9 @@
-import os
-from pathlib import Path
-
 import inquirer
 
-from src.chat_models.gemini import ask_question, init_model
-from src.options.choices import GeneratorChoices
+from src.chat_models.gemini import ask_question
+from src.itv_flow import generate_fis_desc_by_status, generate_fis_desc_flow
 from src.prj_forge import (
     apply_changes_from_fis_content,
-    # create_project_from_fis,
-    generate_description,
 )
 
 QUESTION_PROMPT_TEMPLATE = """
@@ -29,41 +24,10 @@ def prj_interactive_mode():
     prj_fis: str = ""
 
     while True:
-        project_path = inquirer.text(
-            message="请输入项目根目录路径 (留空使用当前目录)",
-        )
-        if not project_path:
-            project_path = "."
-        if not os.path.exists(project_path):
-            print(f"错误: 项目路径 '{project_path}' 不存在。")
+        prj_fis = generate_fis_desc_flow() or ""
+        if not prj_fis:
+            print("生成 FIS 结构未成功，请重试。")
             continue
-        prj_name = Path(project_path).name or "local"
-        output_file = f"{prj_name}_prj_desc.fis"
-
-        if os.path.exists(output_file):
-            confirm = inquirer.confirm(
-                message=f"FIS 描述文件 '{output_file}' 已存在，是否覆盖？", default=True
-            )
-
-            if not confirm:
-                print("操作已取消。")
-                return
-
-        options = GeneratorChoices.checkbox()
-        if GeneratorChoices.add_fis_desc_zh in options:
-            use_explanation = "zh"
-        elif GeneratorChoices.add_fis_desc_en in options:
-            use_explanation = "en"
-        else:
-            use_explanation = ""
-
-        use_gitignore = GeneratorChoices.use_gitignore in options
-        ignore_fis = GeneratorChoices.ignore_fis_files in options
-
-        print(f"正在生成 FIS 描述文件 '{output_file}'...")
-        prj_fis = generate_description(
-            project_path, output_file, use_explanation, use_gitignore, ignore_fis
-        )
         break
 
     print("=================================")
@@ -88,19 +52,15 @@ def prj_interactive_mode():
                 ):
                     apply_changes_from_fis_content(project_path, last_res_content)
                 if inquirer.confirm(message="是否更新 FIS 描述文件？", default=True):
-                    generate_description(
-                        project_path,
-                        output_file,
-                        use_explanation,
-                        use_gitignore,
-                        ignore_fis,
-                    )
+                    generate_fis_desc_by_status()
                     print(f"FIS 描述文件 '{output_file}' 更新成功。")
             elif question == "/?":
-                print("可用命令：")
-                print("/quit: 退出对话模式")
-                print("/apply: 应用最新 FIS 变更")
-                print("Tips: 生成回复过程可随时使用 Ctrl+C 中断输出")
+                print(
+                    "可用命令：\n"
+                    "/quit: 退出对话模式\n"
+                    "/apply: 应用最新 FIS 变更\n"
+                    "Tips: 生成回复过程可随时使用 Ctrl+C 中断输出\n"
+                )
         else:  # 进入 Gemini生成
             last_res_content = ""
             print(f"\n{GEMINI_PLACEHOLDER}", end="")

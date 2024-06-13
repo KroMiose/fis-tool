@@ -3,7 +3,6 @@ import argparse
 from src.interactive_main import main_interactive_mode
 from src.prj_forge import (
     apply_changes_from_fis_file,
-    create_project_from_fis,
     generate_description,
 )
 from src.utils import shell_init
@@ -45,6 +44,12 @@ def main():
         action="store_true",
         help="忽略 .fis 文件",
     )
+    generate_parser.add_argument(
+        "-c",
+        "--custom-fis-config",
+        help="使用自定义 FIS 配置文件",
+        default=None,
+    )
 
     # 从 FIS 描述文件创建项目命令
     create_parser = subparsers.add_parser("create", help="从 FIS 描述文件创建项目")
@@ -66,9 +71,10 @@ def main():
             args.explanation,
             args.gitignore,
             args.ignore_fis,
+            args.custom_fis_config,
         )
     elif args.command == "create":
-        create_project_from_fis(args.output, args.description_file)
+        apply_changes_from_fis_file(args.output, args.description_file)
     elif args.command == "apply":
         apply_changes_from_fis_file(args.project_path, args.changes_file)
     else:

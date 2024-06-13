@@ -32,6 +32,7 @@ class GeneratorChoices(ChoicesBase):
     add_fis_desc_en = "添加 FIS 结构说明提示词 (英文)"
     use_gitignore = "使用 .gitignore 文件过滤项目文件"
     ignore_fis_files = "忽略 .fis 文件"
+    use_custom_fis_config = "使用自定义 FIS 配置文件"
 
     @classmethod
     def expose_choices(cls):
@@ -40,4 +41,5 @@ class GeneratorChoices(ChoicesBase):
             cls.add_fis_desc_en,
             cls.use_gitignore,
             cls.ignore_fis_files,
+            cls.use_custom_fis_config,
         ]
