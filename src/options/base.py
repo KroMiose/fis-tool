@@ -53,3 +53,40 @@ class ChoicesBase:
     def expose_choices(cls):
         """暴露选项列表"""
         raise NotImplementedError
+
+
+class DynamicChoicesBase:
+    """选项组基类"""
+
+    _prompt_message = "请选择"
+
+    def choices(self):
+        """生成子选项列表"""
+        raise NotImplementedError
+
+    def prompt(self):
+        """生成选项提示"""
+        return self._prompt_message
+
+    def checkbox(self, **kwargs):
+        """进行多选动作"""
+        return inquirer.checkbox(
+            message=self._prompt_message, choices=self.choices(), **kwargs
+        )
+
+    def action(self, **kwargs):
+        """进行单选动作"""
+        return inquirer.prompt(  # type: ignore
+            [
+                inquirer.List(
+                    "action",
+                    message=self._prompt_message,
+                    choices=self.choices(),
+                )
+            ],
+            **kwargs
+        )["action"]
+
+    def expose_choices(self):
+        """暴露选项列表"""
+        raise NotImplementedError

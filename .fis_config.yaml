@@ -1,0 +1,16 @@
+ignore_regex:
+- /?.fis_config.yaml
+- \.git/
+- \.svn/
+- \.idea/
+- \.vscode/
+- \.DS_Store
+- __pycache__/
+- \.pyc$
+- \.pyo$
+- \.lock$
+- /?node_modules/
+- /?build/
+- /?dist/
+- /?output/
+- /?temp/

@@ -1,6 +1,10 @@
 import locale
 import os
 import sys
+import threading
+import time
+
+import keyboard
 
 
 def shell_init():
@@ -28,3 +32,40 @@ def is_text_file(file_path: str):
 
 def format_path(path):
     return path.replace("\\\\", "\\").replace("\\", "/")
+
+
+def read_multiline_input(prompt: str):
+    """读取多行输入; Ctrl+Enter 结束输入, Enter / Shift+Enter 键换行"""
+
+    end_input = False
+
+    def check_ctrl_enter():
+        nonlocal end_input
+        while True:
+            if (
+                keyboard.is_pressed("ctrl")
+                and keyboard.is_pressed("enter")
+                and not keyboard.is_pressed("shift")
+            ):
+                end_input = True
+                time.sleep(0.05)
+                keyboard.release("ctrl")
+                keyboard.release("enter")
+                time.sleep(0.05)
+                keyboard.press_and_release("enter")
+                break
+
+    lines = []
+    print(prompt, end="")
+
+    # 启动一个线程来检测 Ctrl+Enter
+    thread = threading.Thread(target=check_ctrl_enter, daemon=True)
+    thread.start()
+
+    while True:
+        lines.append(input())
+        if end_input:
+            break
+
+    thread.join()  # 等待线程结束
+    return "\n".join(lines).strip()

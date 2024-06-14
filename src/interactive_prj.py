@@ -1,10 +1,9 @@
 import inquirer
 
-from src.chat_models.gemini import ask_question
+from src.chat_models.gemini import ask_question, init_model
 from src.itv_flow import generate_fis_desc_by_status, generate_fis_desc_flow
-from src.prj_forge import (
-    apply_changes_from_fis_content,
-)
+from src.prj_forge import apply_changes_from_fis_content
+from src.utils import read_multiline_input
 
 QUESTION_PROMPT_TEMPLATE = """
 {prj_fis}
@@ -18,7 +17,6 @@ GEMINI_PLACEHOLDER = ">>> [Gemini]: 正在建立连接..."
 
 def prj_interactive_mode():
     """项目交互模式"""
-
     project_path: str = ""
     output_file: str = ""
     prj_fis: str = ""
@@ -30,19 +28,26 @@ def prj_interactive_mode():
             continue
         break
 
-    print("=================================")
-    print("项目初始化成功，进入对话交互模式。(输入 /? 查看可用命令)\n")
+    init_model()
+    print(
+        "=================================\n"
+        "项目初始化成功，进入对话交互模式。(输入 /? 查看可用命令，按下 Ctrl+Enter 提交输入)\n"
+    )
     last_res_content = ""
 
     while True:
-        question = input("\n>>> [Command]: ")
+        try:
+            question = read_multiline_input("\n>>> [Command]: ")
+        except KeyboardInterrupt:
+            print("\n\n!! 退出交互模式。")
+            return
 
         if not question:
             continue
 
         if question.startswith("/"):  # 控制命令
             if question == "/quit":
-                print("退出对话模式。")
+                print("\n\n!! 退出交互模式。")
                 return
             elif question == "/apply":
                 print("正在应用最新 FIS 变更...")

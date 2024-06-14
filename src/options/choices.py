@@ -1,4 +1,6 @@
-from src.options.base import ChoicesBase
+from typing import List
+
+from src.options.base import ChoicesBase, DynamicChoicesBase
 
 
 class EntranceChoices(ChoicesBase):
@@ -43,3 +45,18 @@ class GeneratorChoices(ChoicesBase):
             cls.ignore_fis_files,
             cls.use_custom_fis_config,
         ]
+
+
+class DynamicalChoices(DynamicChoicesBase):
+    """动态选项"""
+
+    _prompt_message = "请选择动态选项：( [↑, ↓] 切换选项; [空格] 选择; [回车] 确认 )"
+
+    def __init__(self, prompt_message: str, choices: List[str]):
+        self._prompt_message = (
+            prompt_message if prompt_message else self._prompt_message
+        )
+        self._choices = choices
+
+    def choices(self):
+        return self._choices
