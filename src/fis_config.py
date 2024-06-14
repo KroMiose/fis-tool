@@ -36,6 +36,7 @@ class FisConfig:
                 r"\.pyc$",
                 r"\.pyo$",
                 r"\.lock$",
+                r"-lock.yaml$",
                 r"/?node_modules/",
                 r"/?build/",
                 r"/?dist/",

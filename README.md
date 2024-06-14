@@ -24,7 +24,7 @@ FIS (File Interaction Script) 是一种用于描述项目文件结构的文本�
 
 <summary>查看交互示例</summary>
 
-```bash
+````bash
 [?] 请选择操作：:
  > 进入项目交互模式
    从项目目录生成 FIS 描述文件
@@ -167,7 +167,7 @@ def get_gemini_interpretation(card_name, reversed=False):
 FIS 描述文件 'tarot_prj_desc.fis' 更新成功。
 
 >>> [Command]:
-```
+````
 
 </details>
 
@@ -178,11 +178,12 @@ FIS 描述文件 'tarot_prj_desc.fis' 更新成功。
 - **读取 FIS 描述文件:** 解析 FIS 描述文件内容，还原文件结构和内容信息。(用于从 LLM 的回复还原多文件项目结构)
 - **应用 FIS 描述文件中的变更:** 读取 FIS 描述文件中的变更描述，并应用到现有的项目中，包括添加、修改和删除文件。(用于应用 LLM 进行的变更)
 - **交互式项目操作:** 在您的项目进行交互式对话，方便快速获取思路和更改方案，并快速将变更应用到项目中。(需要 Gemini API 密钥)
+- **自定义过滤规则:** 提供一套独立的自定义规则配置，支持与 .gitignore 共同使用来有效过滤项目文件，提高交互效率。
+- **多对话模型支持:** 目前已支持 Gemini 和 OpenAI 及各种与 OpenAI 接口兼容的模型。
 
 ## 规划中
 
 - [ ] 支持连续对话
-- [ ] 支持更多文件过滤或摘要方式
 - [ ] 支持更多 Gemini 参数调整
 - [ ] 支持更多 LLM (需要 LLM 支持足够长的上下文，因为项目 FIS 文件包含了大量文件内容信息)
 
@@ -236,13 +237,13 @@ fis-tool create -f my_project.fis -o new_project
 fis-tool apply -p my_project -f changes.fis
 ```
 
-### 注意事项
+### 常见问题 Q/A
 
-1. Gemini 代理问题
+#### Q: 如何设置 Gemini 代理？
 
-由于 Gemini 官方库没有提供设置代理的功能，如果需要使用代理访问，需要手动修改官方库代码
+A: 由于 Gemini 官方库没有提供设置代理的功能，如果需要使用代理访问，需要手动修改官方库代码
 
-修改文件位置: `(你的运行 Python 环境)\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\transports\grpc.py` (117 行)
+修改文件位置: `(你的运行 Python 环境)。\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\transports\grpc.py` (117 行)
 
 ```python
 options=[
@@ -251,3 +252,9 @@ options=[
    ("grpc.http_proxy", "http://127.0.0.1:7890"),   # 增加这一行，按需要设置为你的代理地址
 ],
 ```
+
+[2024.6.14] 更新: 尝试 patch 官方库注入代理配置，可以先尝试使用交互操作输入代理地址，如果不行再修改官方库代码
+
+#### Q: 为什么我在交互操作中选择了将 KEY 等信息保存到环境变量，下次运行时仍然需要我填写？
+
+A: 请重启你的终端，环境变量才会生效。
